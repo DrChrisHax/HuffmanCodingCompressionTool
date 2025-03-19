@@ -1,5 +1,6 @@
 import heapq
 import pickle
+import os
 from bitarray import bitarray
 
 class HuffmanNode:
@@ -112,4 +113,20 @@ def Decode(inputFilepath="compressed.bin", outputFilepath="output.txt"):
 
     with open(outputFilepath, "w", encoding="utf-8") as outfile:
         outfile.write(decodedText)
+
+def GetFileSize(filepath):
+    #This takes a file path and returns the
+    #size in bytes of the file but we can
+    #change the return type later based on what
+    #our UI needs
+
+    try:
+        sizeBytes = os.path.getsize(filepath)
+        #sizeKB = sizeBytes / 1024
+        #sizeMB = sizeKB / 1024
+        #sizeGB = sizeMB / 1024
+
+        return sizeBytes
+    except FileNotFoundError:
+        return "File not found"
     
