@@ -1,72 +1,76 @@
-from tkinter import *
-from tkinter import filedialog
-from tkinter import scrolledtext
+import tkinter as tk
+from tkinter import filedialog, scrolledtext, messagebox
 
 from Huffman import Compress, Decompress, GetFileSize
 
-#root setup
-root = Tk()
+#This UI will have two text fields
+
+#The first text field will be a list of files to compress
+#You can add a file by clicking the add button
+#You can remove a file by clicking the remove button
+#You can compress those files by clicking the compress button
+#There also will be a text box where you can name the compressed file
+
+#The second text field will be a single file to decompress
+#You can load in a compressed .bin file
+#There will be a button to decompress the file
+#There will be a button to view the Huffman Tree in the file (implement later)
+
+#Global Varaiables ---------------------------------------------------------------------
+compressFiles = []
+decompressFilePath = None
+
+#Button Functions -----------------------------------------------------------------------
+def AddFile():
+    #Open a file dialog and select a text file to add to the compression list
+    filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+    if filepath:
+        compressFiles.append(filepath)
+        filesListTextbox.insert(tk.END, filepath)
+
+def RemoveFile():
+    #Remove the last file added to the list
+    selection = filesListTextbox.curselection()
+    if selection:
+        index = selection[0]
+        filesListTextbox.delete(index)
+        del compressFiles[index]
+
+def CompressButton():
+    #Compresses the selected files
+    if not compressFiles:
+        messagebox.showerror("No Files Selected", "Please select some text files to compress.")
+        return 
+    
+    #Function not complete
+
+def SelectDecompressFile():
+    pass
+
+def DecompressButton():
+    pass
+
+def ShowHuffmanTree():
+    #This function will open another dialog that shows the 
+    #Huffman Tree stored in the current compressed file
+    pass
+
+
+
+    
+    
+
+#UI Setup ----------------------------------------------------------------
+
+root = tk.Tk()
 root.grid_columnconfigure(0, weight=1)
 root.title("Huffman Coding Compression Tool")
-root.geometry('450x400')
+root.geometry('650x700')
 
-def compress_button():
-    #opens file, runs encoder, updates the "huffman codes" text box
-    #as well as the compression details label
 
-    file_path = openFile()
-    if not file_path:
-        return #The user hit cancel
-    
+#Files Listbox
+filesListTextbox = tk.Listbox(width= 80, height=5)
 
-def decompress_button():
-    pass
 
-def openFile():
-    filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
-    return filepath
-    
-
-def details():
-    pass
-
-#row 0, title label
-title = Label(root, text="Huffman Coding Compression Tool\n", font=("Consolas", 12))
-title.grid(row=0)
-#title.grid_columnconfigure(1, weight=1)
-
-#row 1, select text file button
-select = Button(text ="Select Text File", font=("Consolas", 8), command=compress_button)
-select.grid(row=1)
-
-#row 2, compression details label (tied to "compress_button" function)
-details = Label(root, text="Compression details will appear here", font=("Consolas", 8))
-details. grid(row = 2)
-
-#row 3, "huffman codes" label
-l2 = Label(root, text="Huffman Codes", font=("Consolas", 10))
-l2.grid(row=3)
-
-#row 4, scrolled text box 1
-box1 = scrolledtext.ScrolledText(root, wrap = WORD, width = 50, height = 7, font = ("Consolas", 8))
-box1.configure(state = 'disabled')
-box1.grid(row = 4)
-
-#row 5, "decompress file" button
-decom = Button(text ="Decompress File", font=("Consolas", 8), command=decompress_button)
-decom.grid(row=5)
-
-#row 6, "decoded text" label
-l2 = Label(root, text="Decoded Text", font=("Consolas", 10))
-l2.grid(row=6)
-
-#row 7, scrolled text box 2
-box2 = scrolledtext.ScrolledText(root, wrap = WORD, width = 50, height = 5, font = ("Consolas", 8))
-box2.configure(state = 'disabled')
-box2.grid(row = 7)
-
-#row 8, "exit" button
-exit_ = Button(root, text='Exit', width=10, command=root.destroy)
-exit_.grid(row=8)
 
 root.mainloop()
