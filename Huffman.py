@@ -65,54 +65,81 @@ def GenerateHuffmanCodes(node, prefix=""):
     codes.update(GenerateHuffmanCodes(node.right, prefix + "1"))
     return codes
 
-def Encode(inputFilepath = "input.txt", outputFilepath = "compressed.bin"):
-    #This will encode the contents of inputFilepath
+def Encode(inputFilepaths, outputFilepath = "compressed.bin"):
+    #This will encode the contents of all the inputed files
     #The output file will contain a pickled dictionary with two keys
         #codeTable -> the Huffman codes mapping char to binary string
-        #encodedData -> the compressed bitarray of the input text
+        #encodedData -> the compressed bitarray of the input texts
+
+    allText = ""
+    for filepath in inputFilepaths:
+        with open(filepath, "r", encoding="utf-8") as infile:
+            allText += infile.read()
     
-    with open(inputFilepath, "r", encoding="utf-8") as infile:
-        text = infile.read()
-    
-    if not text:
-        print("Input file is empty")
+    if not allText:
+        print("No data found int he selected files.")
         return
-    
-    frequency = CountFrequency(text)
+
+    #This will build the tree based on the frequency of all the texts
+    frequency = CountFrequency(allText)
     tree = BuildHuffmanTree(frequency)
     codeTable = GenerateHuffmanCodes(tree)
 
-    encodedString = "".join(codeTable[ch] for ch in text)
-    encodedBits = bitarray(encodedString)
+    encodedFiles = []
+    for filepath in inputFilepaths:
+        with open(filepath, "r", encoding="utf-8") as infile:
+            text = infile.read()
+        encodedString = "".join(codeTable[ch] for ch in text)
+        encodedBits = bitarray(encodedString)
+        file_entry = {
+            "f": os.path.basename(filepath), #f for filename
+            "d": encodedBits                 #d for data
+        }
+        encodedFiles.append(file_entry)
 
+    outputData = {
+        "t": codeTable,         #t for tree
+        "e": encodedFiles       #e for encoded files
+    }
     with open(outputFilepath, "wb") as outfile:
-        pickle.dump({"0": codeTable, "1": encodedBits}, outfile)
+        pickle.dump(outputData, outfile)
 
-def Decode(inputFilepath="compressed.bin", outputFilepath="output.txt"):
-    #This takes a .bin file produced by the Encode function and converts it back into text
+def Decode(inputFilepath="compressed.bin", outputDir="decoded_files"):
+    #This takes a .bin file produced by the Encode function and converts it back into multiple text files
     #The file should contain a pickled dictionary with:
-        #0 -> the huffman codes with char to binary
-        #1 -> the bitarray of encoded data
+        #"t": the global Huffman code table (from the global tree)
+        #"e": a list of file entries, where each entry is a dictionary with:
+            #"f": the original filename
+            #"d": the encoded bitarray data
     #The decoded text is written to outputFilepath
 
     with open(inputFilepath, "rb") as infile:
         data = pickle.load(infile)
 
-    codeTable = data["0"]
-    encodedBits = data["1"]
+    codeTable = data["t"]
+    encodedFiles = data["e"]
 
-    bitString = encodedBits.to01()
     reverseCodeTable = {code: char for char, code in codeTable.items()}
-    decodedText = ""
-    currentCode = ""
-    for bit in bitString:
-        currentCode += bit
-        if currentCode in reverseCodeTable:
-            decodedText += reverseCodeTable[currentCode]
-            currentCode = ""
 
-    with open(outputFilepath, "w", encoding="utf-8") as outfile:
-        outfile.write(decodedText)
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+
+    for file_entry in encodedFiles:
+        filename = file_entry["f"]
+        encodedBits = file_entry["d"]
+
+        bitString = encodedBits.to01()
+        decodedText = ""
+        currentCode = ""
+        for bit in bitString:
+            currentCode += bit
+            if currentCode in reverseCodeTable:
+                decodedText += reverseCodeTable[currentCode]
+                currentCode = ""
+
+        outputPath = os.path.join(outputDir, f"decoded_{filename}")
+        with open(outputPath, "w", encoding="utf-8") as outfile:
+            outfile.write(decodedText)    
 
 def GetFileSize(filepath):
     #This takes a file path and returns the
