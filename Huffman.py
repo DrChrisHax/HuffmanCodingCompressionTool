@@ -65,7 +65,7 @@ def GenerateHuffmanCodes(node, prefix=""):
     codes.update(GenerateHuffmanCodes(node.right, prefix + "1"))
     return codes
 
-def Encode(inputFilepaths, outputFilepath = "compressed.bin"):
+def Compress(inputFilepaths, outputFilepath = "compressed.bin"):
     #This will encode the contents of all the inputed files
     #The output file will contain a pickled dictionary with two keys
         #codeTable -> the Huffman codes mapping char to binary string
@@ -104,7 +104,7 @@ def Encode(inputFilepaths, outputFilepath = "compressed.bin"):
     with open(outputFilepath, "wb") as outfile:
         pickle.dump(outputData, outfile)
 
-def Decode(inputFilepath="compressed.bin", outputDir="decoded_files"):
+def Decompress(inputFilepath="compressed.bin", outputDir="decompressed_files"):
     #This takes a .bin file produced by the Encode function and converts it back into multiple text files
     #The file should contain a pickled dictionary with:
         #"t": the global Huffman code table (from the global tree)
@@ -137,7 +137,7 @@ def Decode(inputFilepath="compressed.bin", outputDir="decoded_files"):
                 decodedText += reverseCodeTable[currentCode]
                 currentCode = ""
 
-        outputPath = os.path.join(outputDir, f"decoded_{filename}")
+        outputPath = os.path.join(outputDir, f"decompressed_{filename}")
         with open(outputPath, "w", encoding="utf-8") as outfile:
             outfile.write(decodedText)    
 

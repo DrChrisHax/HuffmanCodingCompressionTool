@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import scrolledtext
 
-from Huffman import Encode, Decode, GetFileSize
+from Huffman import Compress, Decompress, GetFileSize
 
 #root setup
 root = Tk()
@@ -13,17 +13,18 @@ root.geometry('450x400')
 def compress_button():
     #opens file, runs encoder, updates the "huffman codes" text box
     #as well as the compression details label
-    file = openFile()
-    compressed_file = file.replace(".txt", ".bin")
-    Encode(file, compressed_file)
+
+    file_path = openFile()
+    if not file_path:
+        return #The user hit cancel
+    
 
 def decompress_button():
     pass
 
 def openFile():
-    filepath = filedialog.askopenfilename()
-    file = open(filepath, 'r')
-    return file
+    filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+    return filepath
     
 
 def details():
