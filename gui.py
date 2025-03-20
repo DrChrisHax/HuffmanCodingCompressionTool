@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import scrolledtext
 
-from Huffman import Encode, Decode, GetFileSize
+from Huffman import Compress, Decompress, GetFileSize
 import os
 
 #root setup
@@ -17,7 +17,7 @@ def compress_button():
     #          update row 3 text box
     file = openFile()
     compressed_file = file.replace(".txt", ".bin")
-    Encode(file, compressed_file)
+    Compress(file, compressed_file)
 
     
     detail.grid_forget()
