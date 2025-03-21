@@ -1,8 +1,11 @@
 import tkinter as tk
 
-from tkinter import filedialog, messagebox
 import os
+import pickle 
+
+from tkinter import filedialog, messagebox
 from Huffman import Compress, Decompress, GetFileSize
+from DrawHuffmanTree import ShowHuffmanTree
 
 #Global Variables
 compressFiles = []
@@ -43,7 +46,7 @@ def RemoveFile():
 def CompressFiles():
     #Compresses the selected files
     if not compressFiles:
-        messagebox.showerror("No Files Selected", "Please select some text files to compress.")
+        messagebox.showerror("No Files Selected", "Please select some text files to compress")
         return
     
     outputFilename = outputEntry.get().strip() or "compressed.bin"
@@ -65,7 +68,7 @@ def SelectDecompressFile():
 
 def DecompressFile():
     if not decompressFilePath:
-        messagebox.showerror("No Files Selected", "Please select a .bin file to decompress.")
+        messagebox.showerror("No Files Selected", "Please select a .bin file to decompress")
         return
     
     try:
@@ -73,15 +76,27 @@ def DecompressFile():
     except Exception as e:
         messagebox.showerror("Error", str(e))
     
-
-
-# def details(file, output_file):
-#     input_size = GetFileSize(file)
-#     output_size = GetFileSize(output_file)
-#     ratio = round(((output_size/input_size) * 100), 2)
-#     detail = Label(root, text = f"Original: {input_size} bytes | Compressed: {output_size} | Ratio: {ratio}%", font=("Consolas", 8))
-#     detail.grid(row = 2)
-
+#Tree drawing function
+def ShowHuffmanTreeDialog():
+    #Do the validations first
+    #Then call the helper function in the other file
+    if decompressFilePath is None:
+        messagebox.showerror("No Files Selected", "Please select a .bin file to view the tree of")
+        return
+    
+    try:
+        with open(decompressFilePath, "rb") as infile:
+            data = pickle.load(infile)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to load compressed file: {e}")
+        return 
+    
+    codeTable = data.get("t")
+    if codeTable is None:
+        messagebox.showerror("Error", "No Huffman code table found in the file")
+        return 
+    
+    ShowHuffmanTree(codeTable, root)
 
 #-----Compression Frame-----
 compressionFrame = tk.Frame(root, bd=2, relief=tk.RIDGE, padx=10, pady=10)
@@ -137,6 +152,10 @@ compressedSizeLabel.pack(pady=5)
 #Button to decompress the selected file
 decompressButton = tk.Button(decompressFrame, text="Decompress File", command=DecompressFile)
 decompressButton.pack(pady=5)
+
+#Button to show the huffman tree of the selected file
+huffmanTreeButton = tk.Button(decompressFrame, text="Show Huffman Tree", command=ShowHuffmanTreeDialog)
+huffmanTreeButton.pack(pady=5)
 
 #Exit button to close the application
 exitButton = tk.Button(root, text="Exit", width=10, command=root.destroy)

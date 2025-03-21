@@ -1,5 +1,6 @@
 import os
 import shutil
+import pickle
 from Huffman import Compress, Decompress, GetFileSize
 
 def TestSingleFile(fileName):
@@ -82,14 +83,54 @@ def TestMultipleFiles(fileNames):
     print("Total decompressed size: {} bytes".format(totalDecompressedSize))
     print("==============================================\n")
 
+def TestShowHuffmanTree(fileName):
+    print("==============================================")
+    print("Testing Huffman Tree display for:", fileName)
+    
+    #Create a compressed file with a suffix for tree testing.
+    compressedFile = fileName.replace(".txt", "_tree.bin")
+    
+    #Compress the file (single file passed as a list)
+    Compress([fileName], compressedFile)
+    
+    #Load the compressed file to extract the Huffman code table.
+    try:
+        with open(compressedFile, "rb") as infile:
+            data = pickle.load(infile)
+    except Exception as e:
+        print("ERROR: Failed to load compressed file:", e)
+        return
+    
+    codeTable = data.get("t")
+    if codeTable is None:
+        print("ERROR: No Huffman code table found for", fileName)
+        return
+    
+    #Create a new Tkinter root window to display the Huffman tree.
+    import tkinter as tk
+    from DrawHuffmanTree import ShowHuffmanTree
+    treeRoot = tk.Tk()
+    treeRoot.title("Huffman Tree for " + fileName)
+    
+    #Call the helper function to show the tree.
+    ShowHuffmanTree(codeTable, treeRoot)
+    
+    #Start the Tkinter event loop.
+    treeRoot.mainloop()
+    
+    print("==============================================\n")
+
 def CleanTestArtifacts():
-    #Remove any created compressed files
-    filesToRemove = [fileName for fileName in os.listdir() if fileName.endswith("_compressed.bin") or fileName == "multiple_compressed.bin"]
+    #Remove any created compressed files (including tree test files)
+    filesToRemove = [fileName for fileName in os.listdir() 
+                     if fileName.endswith("_compressed.bin") 
+                     or fileName.endswith("_tree.bin") 
+                     or fileName == "multiple_compressed.bin"]
     for fileName in filesToRemove:
         print("Deleting", fileName)
         os.remove(fileName)
     
-    #Remove decompressed directories if they exist
+    #Remove decompressed directories if they exist.
     dirsToRemove = ["decompressed_single", "decompressed_multiple"]
     for dirName in dirsToRemove:
         if os.path.isdir(dirName):
@@ -97,17 +138,20 @@ def CleanTestArtifacts():
             shutil.rmtree(dirName)
 
 def Main():
-    #List of test files
+    #List of test files.
     singleTestFiles = ["input.txt", "shakespeare.txt", "example.txt"]
     
-    #Test each file individually
+    #Test each file individually.
     for fileName in singleTestFiles:
         TestSingleFile(fileName)
     
-    #Test all files together
+    #Test all files together.
     TestMultipleFiles(singleTestFiles)
     
-    #Clean up test artifacts after tests
+    #Test Huffman tree display on one file (e.g., the first file).
+    TestShowHuffmanTree(singleTestFiles[0])
+    
+    #Clean up test artifacts after tests.
     CleanTestArtifacts()
 
 if __name__ == "__main__":
