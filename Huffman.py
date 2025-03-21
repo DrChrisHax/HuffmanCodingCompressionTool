@@ -119,6 +119,8 @@ def Decompress(inputFilepath="compressed.bin", outputDir="decompressed_files"):
             #"d": the encoded bitarray data
     #The decoded text is written to outputFilepath
 
+    allContents = ""
+    
     with open(inputFilepath, "rb") as infile:
         data = pickle.load(infile)
 
@@ -145,7 +147,10 @@ def Decompress(inputFilepath="compressed.bin", outputDir="decompressed_files"):
 
         outputPath = os.path.join(outputDir, f"decompressed_{filename}")
         with open(outputPath, "w", encoding="utf-8") as outfile:
-            outfile.write(decodedText)    
+            outfile.write(decodedText)
+            allContents += (outputPath + "\n" + decodedText + "\n\n")
+
+    return allContents
 
 def GetFileSize(filepath):
     #This takes a file path and returns the
