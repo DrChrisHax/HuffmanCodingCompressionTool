@@ -1,3 +1,4 @@
+import sys
 import os
 import shutil
 import pickle
@@ -138,21 +139,29 @@ def CleanTestArtifacts():
             shutil.rmtree(dirName)
 
 def Main():
-    #List of test files.
-    singleTestFiles = ["input.txt", "shakespeare.txt", "example.txt"]
+    #List of test files in the /inputTexts directory.
+    testFiles = [
+        os.path.join("inputTexts", "input.txt"),
+        os.path.join("inputTexts", "shakespeare.txt"),
+        os.path.join("inputTexts", "example.txt")
+    ]
     
     #Test each file individually.
-    for fileName in singleTestFiles:
+    for fileName in testFiles:
         TestSingleFile(fileName)
     
     #Test all files together.
-    TestMultipleFiles(singleTestFiles)
+    TestMultipleFiles(testFiles)
     
     #Test Huffman tree display on one file (e.g., the first file).
-    TestShowHuffmanTree(singleTestFiles[0])
+    TestShowHuffmanTree(testFiles[0])
     
     #Clean up test artifacts after tests.
     CleanTestArtifacts()
 
 if __name__ == "__main__":
-    Main()
+    if "--test" in sys.argv:
+        Main()
+    else:
+        #Run the GUI application.
+        import GUI
