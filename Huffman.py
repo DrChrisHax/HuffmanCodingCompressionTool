@@ -3,6 +3,12 @@ import pickle
 import os
 from bitarray import bitarray
 
+#Note from Chris:
+#It may be better to use something like the Deflate algorithm
+#as very short text messages tend to have larger compressed files
+#since the Huffman Tree takes up so much space
+#See https://en.wikipedia.org/wiki/Deflate
+
 class HuffmanNode:
     #This class is the structure for a Node in the Huffman Tree
     #Each node has 

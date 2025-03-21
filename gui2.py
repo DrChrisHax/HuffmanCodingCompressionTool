@@ -1,10 +1,7 @@
 import tkinter as tk
 
-from tkinter import filedialog, scrolledtext, messagebox
-
+from tkinter import filedialog, messagebox
 import os
-import pickle
-
 from Huffman import Compress, Decompress, GetFileSize
 
 #Global Variables
@@ -63,6 +60,8 @@ def SelectDecompressFile():
     if filePath:
         decompressFilePath = filePath
         decompressLabel.config(text=os.path.basename(filePath))
+        fileSize = GetFileSize(filePath)
+        compressedSizeLabel.config(text=f"Compressed File Size: {fileSize} bytes")
 
 def DecompressFile():
     if not decompressFilePath:
@@ -131,11 +130,15 @@ selectDecompressButton.pack(pady=5)
 decompressLabel = tk.Label(decompressFrame, text="No file selected", font=("Consolas", 10))
 decompressLabel.pack(pady=5)
 
+#Label to show the size of the compressed file
+compressedSizeLabel = tk.Label(decompressFrame, text="Compressed File Size: 0 bytes", font=("Consolas", 10))
+compressedSizeLabel.pack(pady=5)
+
 #Button to decompress the selected file
 decompressButton = tk.Button(decompressFrame, text="Decompress File", command=DecompressFile)
 decompressButton.pack(pady=5)
 
-# Exit button to close the application
+#Exit button to close the application
 exitButton = tk.Button(root, text="Exit", width=10, command=root.destroy)
 exitButton.pack(pady=10)
 
