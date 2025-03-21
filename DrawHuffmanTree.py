@@ -48,14 +48,21 @@ def LayoutTree(tree, depth, xCounter, positions):
 def DrawTreeWithPositions(canvas, tree, positions, margin, hSpacing, vSpacing, radius=20):
     #This function will draw the tree using precomputed positions
 
+    #Define colors for various elements
+    nodeFillColor = "#add8e6"      #Light blue for node fill
+    nodeOutlineColor = "#000080"   #Navy blue for node outline
+    textColor = "#000000"          #Black for node text
+    edgeColor = "#008000"          #Green for connecting lines
+    branchLabelColor = "#ff4500"   #OrangeRed for branch labels
+
     xLogical, depth = positions[id(tree)]
     x = margin + xLogical * hSpacing
     y = margin + depth * vSpacing
 
     #Leaf node
     label = tree.get('char', '')
-    canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill="white")
-    canvas.create_text(x, y, text=label)
+    canvas.create_oval(x - radius, y - radius, x + radius, y + radius, fill=nodeFillColor, outline=nodeOutlineColor, width=2)
+    canvas.create_text(x, y, text=label, fill=textColor, font=("Helvetica", 12, "bold"))
 
     for bit in ['0', '1']:
         if bit in tree:
@@ -64,11 +71,11 @@ def DrawTreeWithPositions(canvas, tree, positions, margin, hSpacing, vSpacing, r
             childX = margin + childXLogical * hSpacing
             childY = margin + childDepth * vSpacing
             #Draw line from parent's bottom to child's top.
-            canvas.create_line(x, y + radius, childX, childY - radius)
+            canvas.create_line(x, y + radius, childX, childY - radius, fill=edgeColor, width=2)
             #Label the line with the branch bit.
             mid_x = (x + childX) / 2
             mid_y = (y + childY) / 2
-            canvas.create_text(mid_x, mid_y, text=bit)
+            canvas.create_text(mid_x, mid_y, text=bit, fill=branchLabelColor, font=("Helvetica", 10, "bold"))
             #Recursively draw the child node.
             DrawTreeWithPositions(canvas, child, positions, margin, hSpacing, vSpacing, radius)
 
