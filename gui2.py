@@ -12,11 +12,6 @@ compressFiles = []
 totalSize = 0 #Running total of size of all files uploaded
 decompressFilePath = None
 
-#root setup
-root = tk.Tk()
-root.title("Huffman Coding Compression Tool")
-root.geometry('650x850')
-
 #Button Functions 
 def AddFile():
     #Add a text file to the list of files to be compressed
@@ -127,15 +122,27 @@ def ShowHuffmanTreeDialog():
     
     ShowHuffmanTree(codeTable, root)
 
+#-----UI-----
+
+#root setup
+root = tk.Tk()
+root.title("Huffman Coding Compression Tool")
+root.geometry('1920x1080')
+root.attributes('-zoomed', True)
+
+#Main frame to hold other frames
+mainFrame = tk.Frame(root)
+mainFrame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
 #-----Compression Frame-----
-compressionFrame = tk.Frame(root, bd=2, relief=tk.RIDGE, padx=10, pady=10)
-compressionFrame.pack(fill=tk.X, padx=10, pady=5)
+compressionFrame = tk.Frame(mainFrame, bd=2, relief=tk.RIDGE, padx=10, pady=10)
+compressionFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
 compressionTitle = tk.Label(compressionFrame, text="Compression", font=("Consolas", 12, "bold"))
 compressionTitle.pack()
 
 #Listbox for files to be compressed
-filesListbox = tk.Listbox(compressionFrame, width=80, height = 4)
-filesListbox.pack(pady=5)
+filesListbox = tk.Listbox(compressionFrame, width=80, height=4)
+filesListbox.pack(fill=tk.X, pady=5)
 
 #Total sizes of input files
 totalSizeLabel = tk.Label(compressionFrame, text="Total Size: 0 bytes", font=("Consolas", 10))
@@ -147,17 +154,17 @@ compdetails.pack(pady=5)
 
 #Butons to add or remove files
 buttonFrame = tk.Frame(compressionFrame)
-buttonFrame.pack(fill=tk.X)
+buttonFrame.pack(fill=tk.X, pady=5)
 AddButton = tk.Button(buttonFrame, text="Add File", font=("Consolas", 10), command=AddFile)
-AddButton.pack(side=tk.LEFT, padx=5)
 RemoveButton = tk.Button(buttonFrame, text="Remove File", font=("Consolas", 10), command=RemoveFile)
-RemoveButton.pack(side=tk.LEFT, padx=5)
+AddButton.pack(side=tk.LEFT, expand=True, padx=5)
+RemoveButton.pack(side=tk.LEFT, expand=True, padx=5)
 
 #Textbox to name the output compressed file
 outputLabel = tk.Label(compressionFrame, text="Output Compressed File Name:", font=("Consolas", 10))
 outputLabel.pack(pady=5)
 outputEntry = tk.Entry(compressionFrame, width=50)
-outputEntry.pack(pady=5)
+outputEntry.pack(fill=tk.X, pady=5)
 outputEntry.insert(0, "compressed.bin")
 
 #Button to compress files
@@ -167,14 +174,14 @@ compressButton.pack(pady=5)
 #Textbox for codes and label for it
 codelabel = tk.Label(compressionFrame, text="Huffman Codes", font=("Consolas", 10))
 codelabel.pack(pady=5)
-codebox = scrolledtext.ScrolledText(compressionFrame, wrap = tk.WORD, width = 50, height = 6, font = ("Consolas", 8))
-codebox.configure(state = 'disabled')
-codebox.pack(pady=5)
+codebox = scrolledtext.ScrolledText(compressionFrame, wrap=tk.WORD, width=50, height=6, font=("Consolas", 8))
+codebox.configure(state='disabled')
+codebox.pack(fill=tk.X, pady=5)
 
 
 #-----Decompression Frame-----
-decompressFrame = tk.Frame(root, bd=2, relief=tk.RIDGE, padx=10, pady=10)
-decompressFrame.pack(fill=tk.X, padx=10, pady=5)
+decompressFrame = tk.Frame(mainFrame, bd=2, relief=tk.RIDGE, padx=10, pady=10)
+decompressFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
 decompressTitle = tk.Label(decompressFrame, text="Decompression", font=("Consolas", 12, "bold"))
 decompressTitle.pack()
 
@@ -201,9 +208,9 @@ huffmanTreeButton.pack(pady=5)
 #Textbox for decompressed text and label for it
 decomlabel = tk.Label(decompressFrame, text="Decompressed Text", font=("Consolas", 10))
 decomlabel.pack(pady=5)
-decompressedbox = scrolledtext.ScrolledText(decompressFrame, wrap = tk.WORD, width = 50, height = 6, font = ("Consolas", 8))
-decompressedbox.configure(state = 'disabled')
-decompressedbox.pack(pady=5)
+decompressedbox = scrolledtext.ScrolledText(decompressFrame, wrap=tk.WORD, width=50, height=6, font=("Consolas", 8))
+decompressedbox.configure(state='disabled')
+decompressedbox.pack(fill=tk.X, pady=5)
 
 #Exit button to close the application
 exitButton = tk.Button(root, text="Exit", font=("Consolas", 10), width=10, command=root.destroy)
