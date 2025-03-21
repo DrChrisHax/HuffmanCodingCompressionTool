@@ -115,6 +115,7 @@ def ShowHuffmanTree(codeTable, rootUIElement):
     #Create a new dialog window with a canvas to display the tree.
     treeWindow = tk.Toplevel(rootUIElement)
     treeWindow.title("Huffman Tree")
+    treeWindow.attributes('-zoomed', True)
 
     #Create a frame to hold the canvas and scrollbars.
     frame = tk.Frame(treeWindow)
