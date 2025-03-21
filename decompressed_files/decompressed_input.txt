@@ -1,0 +1,4 @@
+Huffman coding is a lossless data compression algorithm.
+It is used in various applications including file compression formats like ZIP.
+The algorithm follows a greedy approach by assigning variable-length codes to characters,
+ensuring optimal encoding efficiency.
