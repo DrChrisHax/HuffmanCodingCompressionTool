@@ -9,6 +9,7 @@ from Huffman import Compress, Decompress, GetFileSize
 
 #Global Variables
 compressFiles = []
+totalSize = 0 #Running total of size of all files uploaded
 decompressFilePath = None
 
 #root setup
@@ -19,18 +20,27 @@ root.geometry('650x700')
 #Button Functions 
 def AddFile():
     #Add a text file to the list of files to be compressed
+    global totalSize
     filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
     if filepath:
+        fileSize = GetFileSize(filepath)  #Get file size in bytes
         compressFiles.append(filepath)
-        filesListbox.insert(tk.END, filepath)
+        #Insert file path along with its size into the listbox
+        filesListbox.insert(tk.END, f"{filepath} - {fileSize} bytes")
+        totalSize += fileSize
+        totalSizeLabel.config(text=f"Total Size: {totalSize} bytes")
 
 def RemoveFile():
     #Remove a text file from the list of files to be compressed
+    global totalSize
     selection = filesListbox.curselection()
     if selection:
         index = selection[0]
+        removedFile = compressFiles.pop(index)
+        fileSize = GetFileSize(removedFile)
+        totalSize -= fileSize
         filesListbox.delete(index)
-        del compressFiles[index]
+        totalSizeLabel.config(text=f"Total Size: {totalSize} bytes")
 
 
 def CompressFiles():
@@ -83,6 +93,10 @@ compressionTitle.pack()
 #Listbox for files to be compressed
 filesListbox = tk.Listbox(compressionFrame, width=80)
 filesListbox.pack(pady=5)
+
+#Total sizes of input files
+totalSizeLabel = tk.Label(compressionFrame, text="Total Size: 0 bytes", font=("Consolas", 10))
+totalSizeLabel.pack(pady=5)
 
 #Butons to add or remove files
 buttonFrame = tk.Frame(compressionFrame)
