@@ -15,7 +15,7 @@ decompressFilePath = None
 #root setup
 root = tk.Tk()
 root.title("Huffman Coding Compression Tool")
-root.geometry('650x720')
+root.geometry('650x850')
 
 #Button Functions 
 def AddFile():
@@ -69,11 +69,13 @@ def CompressFiles():
     for char, code in codeTable.items():
         codes += (char + " : " + code + "\n")
     codebox.configure(state='normal')
+    codebox.delete("1.0", tk.END)
     codebox.insert(tk.INSERT, codes)
+    codebox.configure(state='disabled')
     
     #get compressed filesize and size ratio
     compressed_filesize = GetFileSize(outputFilename)
-    ratio = round(((totalSize/compressed_filesize) * 100), 2)
+    ratio = round(((compressed_filesize/totalSize) * 100), 2)
     compdetails.config(text=f"Compressed Size : {compressed_filesize} Bytes | Ratio : {ratio}%")
 
 def SelectDecompressFile():
@@ -92,9 +94,15 @@ def DecompressFile():
         return
     
     try:
-        Decompress(decompressFilePath)
+        contents = Decompress(decompressFilePath)
     except Exception as e:
         messagebox.showerror("Error", str(e))
+
+    #update the textbox for the decompressed contents
+    decompressedbox.configure(state="normal")
+    decompressedbox.delete("1.0", tk.END)
+    decompressedbox.insert(tk.INSERT, contents)
+    decompressedbox.configure(state="disabled")
     
 #Tree drawing function
 def ShowHuffmanTreeDialog():
@@ -140,20 +148,20 @@ compdetails.pack(pady=5)
 #Butons to add or remove files
 buttonFrame = tk.Frame(compressionFrame)
 buttonFrame.pack(fill=tk.X)
-AddButton = tk.Button(buttonFrame, text="Add File", command=AddFile)
+AddButton = tk.Button(buttonFrame, text="Add File", font=("Consolas", 10), command=AddFile)
 AddButton.pack(side=tk.LEFT, padx=5)
-RemoveButton = tk.Button(buttonFrame, text="Remove File", command=RemoveFile)
+RemoveButton = tk.Button(buttonFrame, text="Remove File", font=("Consolas", 10), command=RemoveFile)
 RemoveButton.pack(side=tk.LEFT, padx=5)
 
 #Textbox to name the output compressed file
-outputLabel = tk.Label(compressionFrame, text="Output Compressed File Name:")
+outputLabel = tk.Label(compressionFrame, text="Output Compressed File Name:", font=("Consolas", 10))
 outputLabel.pack(pady=5)
 outputEntry = tk.Entry(compressionFrame, width=50)
 outputEntry.pack(pady=5)
 outputEntry.insert(0, "compressed.bin")
 
 #Button to compress files
-compressButton = tk.Button(compressionFrame, text="Compress Files", command=CompressFiles)
+compressButton = tk.Button(compressionFrame, text="Compress Files", font=("Consolas", 10), command=CompressFiles)
 compressButton.pack(pady=5)
 
 #Textbox for codes and label for it
@@ -171,27 +179,34 @@ decompressTitle = tk.Label(decompressFrame, text="Decompression", font=("Consola
 decompressTitle.pack()
 
 #Button to select a compressed file
-selectDecompressButton = tk.Button(decompressFrame, text="Select Compressed File", command=SelectDecompressFile)
+selectDecompressButton = tk.Button(decompressFrame, text="Select Compressed File", font=("Consolas", 10), command=SelectDecompressFile)
 selectDecompressButton.pack(pady=5)
 
 #Label to show the selected compressed file
-decompressLabel = tk.Label(decompressFrame, text="No file selected", font=("Consolas", 10))
+decompressLabel = tk.Label(decompressFrame, text="No file selected", font=("Consolas", 8))
 decompressLabel.pack(pady=5)
 
 #Label to show the size of the compressed file
-compressedSizeLabel = tk.Label(decompressFrame, text="Compressed File Size: 0 bytes", font=("Consolas", 10))
+compressedSizeLabel = tk.Label(decompressFrame, text="Compressed File Size: 0 bytes", font=("Consolas", 8))
 compressedSizeLabel.pack(pady=5)
 
 #Button to decompress the selected file
-decompressButton = tk.Button(decompressFrame, text="Decompress File", command=DecompressFile)
+decompressButton = tk.Button(decompressFrame, text="Decompress File", font=("Consolas", 10), command=DecompressFile)
 decompressButton.pack(pady=5)
 
 #Button to show the huffman tree of the selected file
-huffmanTreeButton = tk.Button(decompressFrame, text="Show Huffman Tree", command=ShowHuffmanTreeDialog)
+huffmanTreeButton = tk.Button(decompressFrame, text="Show Huffman Tree", font=("Consolas", 10), command=ShowHuffmanTreeDialog)
 huffmanTreeButton.pack(pady=5)
 
+#Textbox for decompressed text and label for it
+decomlabel = tk.Label(decompressFrame, text="Decompressed Text", font=("Consolas", 10))
+decomlabel.pack(pady=5)
+decompressedbox = scrolledtext.ScrolledText(decompressFrame, wrap = tk.WORD, width = 50, height = 6, font = ("Consolas", 8))
+decompressedbox.configure(state = 'disabled')
+decompressedbox.pack(pady=5)
+
 #Exit button to close the application
-exitButton = tk.Button(root, text="Exit", width=10, command=root.destroy)
+exitButton = tk.Button(root, text="Exit", font=("Consolas", 10), width=10, command=root.destroy)
 exitButton.pack(pady=10)
 
 root.mainloop()
