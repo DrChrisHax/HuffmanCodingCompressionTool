@@ -3,7 +3,7 @@ import tkinter as tk
 import os
 import pickle 
 
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, scrolledtext
 from Huffman import Compress, Decompress, GetFileSize
 from DrawHuffmanTree import ShowHuffmanTree
 
@@ -15,7 +15,7 @@ decompressFilePath = None
 #root setup
 root = tk.Tk()
 root.title("Huffman Coding Compression Tool")
-root.geometry('650x700')
+root.geometry('650x720')
 
 #Button Functions 
 def AddFile():
@@ -55,6 +55,26 @@ def CompressFiles():
         Compress(compressFiles, outputFilename)
     except Exception as e:
         messagebox.showerror("Error", str(e))
+        
+    #update the huffman codes textbox
+    try:
+        with open(outputFilename, "rb") as infile:
+            data = pickle.load(infile)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to load compressed file: {e}")
+        return
+    codeTable = data.get("t")
+
+    codes = ""
+    for char, code in codeTable.items():
+        codes += (char + " : " + code + "\n")
+    codebox.configure(state='normal')
+    codebox.insert(tk.INSERT, codes)
+    
+    #get compressed filesize and size ratio
+    compressed_filesize = GetFileSize(outputFilename)
+    ratio = round(((totalSize/compressed_filesize) * 100), 2)
+    compdetails.config(text=f"Compressed Size : {compressed_filesize} Bytes | Ratio : {ratio}%")
 
 def SelectDecompressFile():
     #Lets the user select a file to be decompressed
@@ -92,6 +112,7 @@ def ShowHuffmanTreeDialog():
         return 
     
     codeTable = data.get("t")
+        
     if codeTable is None:
         messagebox.showerror("Error", "No Huffman code table found in the file")
         return 
@@ -105,12 +126,16 @@ compressionTitle = tk.Label(compressionFrame, text="Compression", font=("Consola
 compressionTitle.pack()
 
 #Listbox for files to be compressed
-filesListbox = tk.Listbox(compressionFrame, width=80)
+filesListbox = tk.Listbox(compressionFrame, width=80, height = 4)
 filesListbox.pack(pady=5)
 
 #Total sizes of input files
 totalSizeLabel = tk.Label(compressionFrame, text="Total Size: 0 bytes", font=("Consolas", 10))
 totalSizeLabel.pack(pady=5)
+
+#compressed filesize and ratio Label
+compdetails = tk.Label(compressionFrame, text = "Compressed Size : -- Bytes | Ratio : --%", font=("Consolas", 8))
+compdetails.pack(pady=5)
 
 #Butons to add or remove files
 buttonFrame = tk.Frame(compressionFrame)
@@ -130,6 +155,14 @@ outputEntry.insert(0, "compressed.bin")
 #Button to compress files
 compressButton = tk.Button(compressionFrame, text="Compress Files", command=CompressFiles)
 compressButton.pack(pady=5)
+
+#Textbox for codes and label for it
+codelabel = tk.Label(compressionFrame, text="Huffman Codes", font=("Consolas", 10))
+codelabel.pack(pady=5)
+codebox = scrolledtext.ScrolledText(compressionFrame, wrap = tk.WORD, width = 50, height = 6, font = ("Consolas", 8))
+codebox.configure(state = 'disabled')
+codebox.pack(pady=5)
+
 
 #-----Decompression Frame-----
 decompressFrame = tk.Frame(root, bd=2, relief=tk.RIDGE, padx=10, pady=10)
